@@ -13,8 +13,6 @@ The storyScript is Game-Development tool for prototyping Game's story. Especiall
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-Make sure use Windows Operating System to compile the project. Linux support will be coming soon.
-
 How to compile:
 
 ```
@@ -39,6 +37,8 @@ s1 {
     b = "STOP";
 }
 ```
+
+* is the first Scene. it always be called first.
 
 Param | Description
 ------|-------------
