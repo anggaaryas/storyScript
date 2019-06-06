@@ -5,7 +5,7 @@ The storyScript is Game-Development tool for prototyping Game's story. Especiall
 - [x] Create project
 - [x] Save Game
 - [x] Load Game
-- [ ] Linux support
+- [x] Linux support (but no sound. will fix later)
 - [ ] Export to another Game Engine
 - [ ] ...
 
