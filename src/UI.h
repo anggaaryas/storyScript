@@ -14,6 +14,8 @@ class UI
     static void openingGame();
     static void letsPlay();
     static void dataEmpty();
+    static void sleep(int ms);
+    static void clear();
 };
 
 #endif

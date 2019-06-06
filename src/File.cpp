@@ -5,7 +5,14 @@
 
 #include "include/dirent.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 #include <fstream>
 #include <sstream>
 
@@ -20,13 +27,30 @@ std::string File::getExePath()
 
 std::string File::getExeFileName()
 {
+    std::string path = "NOPE";
+
+#ifdef WIN32
     char buffer[MAX_PATH];
     GetModuleFileName(NULL, buffer, MAX_PATH);
-    return std::string(buffer);
+    path =  std::string(buffer);
+#endif
+
+#ifdef __linux__
+    char buff[PATH_MAX];
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
+    if (len != -1)
+    {
+        buff[len] = '\0';
+        path =  std::string(buff);
+    }
+#endif
+
+    return path;
 }
 
 std::vector<FileItem> File::fileChooser(const char *path)
 {
+    std::cout << path << "\n";
     std::vector<FileItem> content;
     struct dirent *entry;
     DIR *dir = opendir(path);
@@ -41,7 +65,7 @@ std::vector<FileItem> File::fileChooser(const char *path)
         int index = 1;
         while ((entry = readdir(dir)) != NULL)
         {
-            if (x++ < 3)
+            if (x++ < 0) //windows < 3 
             {
             }
             else
@@ -62,7 +86,7 @@ std::vector<FileItem> File::fileChooser(const char *path)
 
 void File::createProject(std::string name)
 {
-    std::string path = "project\\";
+    std::string path = "project/";
     path.append(name);
 
     std::string main = path;
@@ -70,10 +94,10 @@ void File::createProject(std::string name)
     {
         std::string x = "mkdir \"";
         x.append(rootDirectory);
-        x.append("\\");
+        x.append("/");
 
         std::string z = x;
-        z.append("savedGame\\");
+        z.append("savedGame/");
         z.append(name);
         z.append("\"");
         system(z.c_str());
@@ -84,7 +108,7 @@ void File::createProject(std::string name)
         y.append("\"");
         system(y.c_str());
 
-        x.append("\\music\"");
+        x.append("/music\"");
         system(x.c_str());
     }
 
@@ -94,9 +118,11 @@ void File::createProject(std::string name)
     o.open(main);
     o.close();
 
-    system("CLS");
+    UI::clear();
     std::cout << "Project created!";
-    Sleep(1000);
+
+    UI::sleep(1000);
+
     Menu();
 }
 
@@ -117,7 +143,7 @@ std::string File::findFile(std::string number, std::vector<FileItem> content)
 
 int File::saveGame(std::string id)
 {
-    std::string path = "savedGame\\" + Menu::compiledName + "/";
+    std::string path = "savedGame/" + Menu::compiledName + "/";
     int i = 1;
 
     fileChooser(path.c_str());
@@ -132,7 +158,7 @@ int File::saveGame(std::string id)
     std::ifstream myFile(ss.str().c_str());
     while (myFile.good())
     {
-        system("CLS");
+        UI::clear();
 
         std::string q;
         std::cout << "already exist. Overwrite (y/n)? ";
@@ -166,11 +192,12 @@ int File::saveGame(std::string id)
 
         std::cout << "\nSaved!"
                   << "\n\n";
-        myFile << id << "\n" << Player::tempBGM;
+        myFile << id << "\n"
+               << Player::tempBGM;
         myFile.close();
 
-        Sleep(1250);
-        system("CLS");
+        UI::sleep(1250);
+        UI::clear();
 
         return 1;
     }
@@ -181,9 +208,9 @@ int File::saveGame(std::string id)
     }
 }
 
-SceneItem* File::loadGame()
+SceneItem *File::loadGame()
 {
-    std::string path = "savedGame\\" + Menu::compiledName + "/";
+    std::string path = "savedGame/" + Menu::compiledName + "/";
     std::string menu, result;
 
     std::cout << "choose load file: \n";
@@ -198,14 +225,16 @@ SceneItem* File::loadGame()
     if (myFile.good())
     {
         SceneItem *item = new SceneItem;
-        getline(myFile, item -> id);
-        getline(myFile, item -> bgm);
+        getline(myFile, item->id);
+        getline(myFile, item->bgm);
         myFile.close();
 
         std::cout << "\nGame loaded!\n\n";
-        Sleep(1250);
-        system("CLS");
+        UI::sleep(1250);
+        UI::clear();
 
         return item;
-    } else return NULL;
+    }
+    else
+        return NULL;
 }

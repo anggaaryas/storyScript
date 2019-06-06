@@ -1,9 +1,14 @@
 #include "Parser.h"
+#include "UI.h"
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#include <cstring>
 #include <fstream>
 #include <string>
-#include <windows.h>
-#include <cstring>
+#include <ctype.h>
 
 Parser::Parser(GameScene &gameScene)
 {
@@ -18,8 +23,17 @@ void Parser::intialize()
 
 std::string Parser::trim(std::string text)
 {
-    auto xTmp = text.find_first_not_of(' ');
-    auto yTmp = text.find_last_not_of(' ');
+    /*
+        ' '     =   space               0x20
+        '\t'    =   tab                 0x09
+        '\n'    =   newline             0x0a
+        '\v'    =   vertical tab        0x0b
+        '\f'    =   feed                0x0c
+        '\r'    =   carriage return     0x0d
+    */
+   
+    auto xTmp = text.find_first_not_of(" \t\v\f\r");
+    auto yTmp = text.find_last_not_of(" \t\v\f\r");
 
     return text.substr(xTmp, (yTmp - xTmp) + 1);
 }
@@ -27,6 +41,8 @@ std::string Parser::trim(std::string text)
 void Parser::createGame(const char *project)
 {
     intialize();
+
+    std::cout << trim("    b") << "\n";
 
     std::string input = "";
     std::ifstream myFile;
@@ -60,6 +76,7 @@ void Parser::createGame(const char *project)
         while (edParam < input.find(SCENE_CLOSE, stParam))
         {
             std::string parameter = trim(input.substr(stParam, edParam - stParam));
+
             if (parameter == CHOICE)
             {
                 auto stChoice = edParam + std::strlen(PARAM);
@@ -130,18 +147,18 @@ void Parser::saveNode(SceneItem *scene)
 
 void Parser::constructStory()
 {
-    system("CLS");
+    UI::clear();
     std::cout << "MASUK Story play...\n";
-    gameScene -> storyBegin = gameScene -> findStory(START_POINT);
-    constructStoryCore(gameScene -> storyBegin);
+    gameScene->storyBegin = gameScene->findStory(START_POINT);
+    constructStoryCore(gameScene->storyBegin);
 }
 
 void Parser::constructStoryCore(GameSceneItem *item)
 {
-    std::cout << "MASUK Story play Flow... " << item -> scene -> id << "\n";
-    for (auto next : item-> scene -> choiceDestination)
+    std::cout << "MASUK Story play Flow... " << item->scene->id << "\n";
+    for (auto next : item->scene->choiceDestination)
     {
-        std::cout << "\tSearch: " << next << " From: " << item -> scene -> id << "\n";
+        std::cout << "\tSearch: " << next << " From: " << item->scene->id << "\n";
         GameSceneItem *temp = gameScene->findStory(next);
 
         item->storyNext.push_back(temp);

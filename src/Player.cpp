@@ -3,13 +3,16 @@
 #include "Menu.h"
 #include "GameSceneItem.h"
 #include "File.h"
+#include "Parser.h"
+
+#include <cstring>
 
 std::string Player::currentBgm = "";
 std::string Player::tempBGM = "";
 
 Player::Player(GameScene gameScene)
 {
-    this -> gameScene = gameScene;
+    this->gameScene = gameScene;
     showScene(gameScene.storyBegin);
 }
 
@@ -18,13 +21,15 @@ void Player::showScene(GameSceneItem *current)
     bool autonext = false;
     int i = 1;
 
-    if(current->scene->bgm != "" ) tempBGM = current->scene->bgm;
+    if (current->scene->bgm != "")
+        tempBGM = current->scene->bgm;
     if (current->scene->bgm != "" && current->scene->bgm != "STOP")
     {
         currentBgm = Menu::root_game;
         currentBgm.append("\\music\\");
         currentBgm.append(tempBGM);
 
+#ifdef WIN32
         bgm = CreateThread(
             NULL,    /* default security attributes.   */
             0,       /* use default stack size.        */
@@ -32,6 +37,7 @@ void Player::showScene(GameSceneItem *current)
             NULL,    /* argument to thread function.   */
             0,       /* use default creation flags.    */
             NULL);
+#endif
     }
     else if (current->scene->bgm == "STOP")
         stopBGM();
@@ -72,22 +78,26 @@ void Player::showScene(GameSceneItem *current)
         int ch_ = std::stoi(ch);
         if (ch_ > 0 && ch_ < i)
         {
-            system("CLS");
+            UI::clear();
             showScene(current->storyNext.at(ch_ - 1));
         }
         else if (ch_ == 77)
         {
-            system("CLS");
+            UI::clear();
             File::saveGame(current->scene->id);
             showScene(current);
         }
         else if (ch_ == 88)
         {
-            system("CLS");
+            UI::clear();
             stopBGM();
             SceneItem *item = File::loadGame();
-            GameSceneItem *story = gameScene.findStory(item -> id);
-            story -> scene -> bgm = item -> bgm;
+
+            item -> id = Parser::trim(item -> id);
+
+            GameSceneItem *story = gameScene.findStory(item->id);
+            story->scene->bgm = item->bgm;
+
             showScene(story);
         }
         else if (ch_ == 99)
@@ -102,21 +112,26 @@ void Player::showScene(GameSceneItem *current)
     else
     {
         getchar();
-        system("CLS");
+        UI::clear();
         showScene(current->storyNext.at(0));
     }
 }
 
 void Player::stopBGM()
 {
+#ifdef _WIN32
     PlaySound(NULL, NULL, SND_LOOP | SND_ASYNC);
+#endif
 }
 
+#ifdef _WIN32
 DWORD WINAPI Player::playBGM(void *threadParams)
 {
     PlaySound(TEXT(currentBgm.c_str()), NULL, SND_LOOP | SND_ASYNC);
     return 0;
 }
+
+#endif
 
 void Player::playEffect(std::string source)
 {

@@ -22,16 +22,15 @@ class Parser
 {
 private:
     GameScene *gameScene;
-    std::string trim(std::string text);
     void saveNode(SceneItem *scene);
     void intialize();
     void constructStory();
     void constructStoryCore(GameSceneItem *item);
+
 public:
+    static std::string trim(std::string text);
     Parser(GameScene &gameScene);
     void createGame(const char *project);
-    
 };
-
 
 #endif

@@ -1,9 +1,18 @@
 #include "UI.h"
 
 #include <iostream>
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 #include <stdlib.h>
 #include <time.h>
+#include <cstring>
 
 UI::UI()
 {
@@ -23,29 +32,34 @@ void UI::typeWriter(const char x[], bool isBootAnimation)
     {
         std::cout << x[i];
         if (isBootAnimation)
-            Sleep(150);
+            sleep(150);
         else
-            Sleep(33);
+            sleep(33);
     }
     std::cout << "\n";
-    Sleep(450);
+    sleep(450);
 }
 
 void UI::glitch()
 {
-    system("CLS");
+    clear();
     std::cout << "\n\n";
     std::cout << "\t" << (char)cc() << (char)cc() << (char)cc() << (char)cc() << (char)cc() << ' ' << (char)cc() << (char)cc() << (char)cc() << (char)cc() << (char)cc() << (char)cc() << "\n";
     std::cout << "\t" << (char)cc() << (char)cc() << (char)cc() << (char)cc() << ' ' << (char)cc() << (char)cc() << (char)cc() << (char)cc() << (char)cc() << (char)cc() << "\n";
     std::cout << "\t" << (char)cc() << ' ' << (char)cc() << '.' << (char)cc() << "\n\n";
 }
 
-void UI::openingGame(){
-    system("CLS");
+void UI::openingGame()
+{
+    clear();
     std::cout << "Opening...";
-    Sleep(300);
-    system("CLS");
+    sleep(300);
+    clear();
+
+#ifdef WIN32
     PlaySound(TEXT("opening.wav"), NULL, SND_ASYNC);
+#endif
+
     char t[] = "Story Script";
     char t2[] = "Game Engine";
     char t3[] = "v 0.1";
@@ -54,21 +68,21 @@ void UI::openingGame(){
     std::cout << "\n";
     typeWriter(t, true);
     typeWriter(t2, true);
-    typeWriter(t3,true);
+    typeWriter(t3, true);
 
-    Sleep(400);
+    sleep(400);
     for (int i = 0; i < 25; i++)
     {
         glitch();
-        Sleep(30);
+        sleep(30);
     }
-    system("CLS");
-    Sleep(1000);
+    clear();
+    sleep(1000);
 }
 
 void UI::letsPlay()
 {
-    system("CLS");
+    clear();
     std::cout << "##################################\n";
     std::cout << "##          Lets Play...        ##\n";
     std::cout << "##################################\n\n";
@@ -82,4 +96,27 @@ int UI::cc()
 void UI::dataEmpty()
 {
     std::cout << "Data is empty...";
+}
+
+void UI::sleep(int ms)
+{
+#ifdef _WIN32
+    Sleep(ms);
+#endif
+
+#ifdef __linux__
+    fflush(stdout);
+    usleep(ms * 1000);
+#endif
+}
+
+void UI::clear()
+{
+#ifdef _WIN32
+    system("CLS");
+#endif
+
+#ifdef __linux__
+    system("clear");
+#endif
 }
