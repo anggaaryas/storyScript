@@ -11,7 +11,7 @@ std::string Menu::compiledName = "";
 
 Menu::Menu()
 {
-    system("CLS");
+    UI::clear();
     std::string menu;
 
     std::cout << "Location  : " << File::getExePath() << "\n\n";
@@ -42,7 +42,7 @@ void Menu::getFunction(int menu)
 
 void Menu::createGame()
 {
-    system("CLS");
+    UI::clear();
 
     std::string menu;
     int temp;
@@ -59,7 +59,7 @@ void Menu::createGame()
     {
     create:
         std::string name;
-        system("CLS");
+        UI::clear();
         std::cout << "Create new project!\n\n";
         std::cout << "Name Project / Story : ";
         std::getline(std::cin, name);
@@ -72,13 +72,13 @@ void Menu::createGame()
 
 void Menu::playGame()
 {
-    system("CLS");
+    UI::clear();
     std::string menu;
 
     std::cout << "Ready to compile a project? choose the project name.\n\n";
 
     std::string project = File::getExePath();
-    project.append("\\project");
+    project.append("/project");
 
     UI::separator();
     std::vector<FileItem> content = File::fileChooser(project.c_str());
@@ -87,14 +87,14 @@ void Menu::playGame()
     std::cout << "> Hmm, i choose number: ";
     std::getline(std::cin, menu);
 
-    std::string path = "project\\";
+    std::string path = "project/";
     compiledName = File::findFile(menu, content);
     path.append(compiledName);
 
     root_game = path;
     current_game = compiledName;
 
-    path.append("\\main.StoryScript");
+    path.append("/main.StoryScript");
 
     parser.createGame(path.c_str());
     UI::openingGame();

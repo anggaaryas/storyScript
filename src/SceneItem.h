@@ -9,8 +9,6 @@ class SceneItem
   private:
   
   public:
-    Scene(/* args */);
-
     std::string desc = "", id = "", bgm = "", sfx = "";
     std::vector<std::string> choiceText, choiceDestination;
 };
