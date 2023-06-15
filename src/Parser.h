@@ -15,6 +15,7 @@
 #define CHOICE "c"
 #define BGM "b"
 #define EFFECT "e"
+#define END_CHOICE_ARRAY ","
 
 #define START_POINT "*"
 

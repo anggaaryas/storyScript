@@ -119,6 +119,7 @@ void Player::showScene(GameSceneItem *current)
 
 void Player::stopBGM()
 {
+    std::cout << "BGM stop" << std::endl;
 #ifdef _WIN32
     PlaySound(NULL, NULL, SND_LOOP | SND_ASYNC);
 #endif
@@ -132,6 +133,7 @@ DWORD WINAPI Player::playBGM(void *threadParams)
 }
 
 #endif
+
 
 void Player::playEffect(std::string source)
 {

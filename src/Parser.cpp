@@ -42,8 +42,6 @@ void Parser::createGame(const char *project)
 {
     intialize();
 
-    std::cout << trim("    b") << "\n";
-
     std::string input = "";
     std::ifstream myFile;
     myFile.open(project);
@@ -73,23 +71,51 @@ void Parser::createGame(const char *project)
 
         auto stParam = edDesc + std::strlen(DESC);
         auto edParam = input.find(PARAM, stParam);
+
+        std::cout << stDesc << std::endl;
+        std::cout << edDesc << std::endl;
+        std::cout << node-> desc << std::endl << std::endl;
+
         while (edParam < input.find(SCENE_CLOSE, stParam))
         {
             std::string parameter = trim(input.substr(stParam, edParam - stParam));
 
-            if (parameter == CHOICE)
-            {
-                auto stChoice = edParam + std::strlen(PARAM);
-                auto edChoice = input.find(DESC, stChoice);
-                stChoice = edChoice + std::strlen(DESC);
-                edChoice = input.find(DESC, stChoice);
-                node->choiceText.push_back(input.substr(stChoice, edChoice - stChoice));
+            std::cout << parameter << std::endl;
 
-                auto stDestination = edChoice + std::strlen(DESC);
-                auto edDestination = input.find(DESTINATION_CHOICE, stDestination);
-                stDestination = edDestination + std::strlen(DESTINATION_CHOICE);
-                edDestination = input.find(END_PARAM, stDestination);
-                node->choiceDestination.push_back(trim(input.substr(stDestination, edDestination - stDestination)));
+            if (parameter == CHOICE )
+            {
+                auto isChoiceArray = false;
+                do {
+                    auto stChoice = isChoiceArray ? edParam :edParam + std::strlen(PARAM);
+                    auto edChoice = input.find(DESC, stChoice);
+                    stChoice = edChoice + std::strlen(DESC);
+                    edChoice = input.find(DESC, stChoice);
+                    node->choiceText.push_back(input.substr(stChoice, edChoice - stChoice));
+
+                    auto stDestination = edChoice + std::strlen(DESC);
+                    auto edDestination = input.find(DESTINATION_CHOICE, stDestination);
+                    stDestination = edDestination + std::strlen(DESTINATION_CHOICE);
+                    edDestination = input.find(END_PARAM, stDestination);
+
+                    auto tempDestChoice = input.find(DESTINATION_CHOICE, stDestination);
+                    
+                    if(edDestination > tempDestChoice){
+                        edDestination = input.find(END_CHOICE_ARRAY, stDestination);
+                        isChoiceArray = true;
+                    } else {
+                        isChoiceArray = false;
+                    }
+
+                    node->choiceDestination.push_back(trim(input.substr(stDestination, edDestination - stDestination)));
+                    
+                    std::cout << trim(input.substr(stDestination, edDestination - stDestination)) << "    ";
+                    std::cout << trim(input.substr(stChoice, edChoice - stChoice)) << std::endl;
+
+                    if(isChoiceArray){
+                        stParam = edDestination + std::strlen(END_CHOICE_ARRAY);
+                        edParam = input.find(DESC, stParam);
+                    }
+                } while(isChoiceArray);
             }
             else if (parameter == BGM)
             {
@@ -147,7 +173,7 @@ void Parser::saveNode(SceneItem *scene)
 
 void Parser::constructStory()
 {
-    UI::clear();
+    // UI::clear();
     std::cout << "MASUK Story play...\n";
     gameScene->storyBegin = gameScene->findStory(START_POINT);
     constructStoryCore(gameScene->storyBegin);
