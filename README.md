@@ -19,31 +19,141 @@ How to compile:
 cd $dir && g++ -std=c++14 *.cpp  -lwinmm $path_winmm.dll -o $compiled_name
 ```
 
-## Usage
 
-### The .StoryScript
+## * .StoryScript Documentation
 
+The * .StoryScript format is a scripting language designed to create interactive scenes or narratives. This documentation explains the usage and syntax of the format.
+
+### Scene Definition
+
+A scene is defined using the `*` symbol followed by the scene label. The scene label represents a specific section or moment in the narrative. The first scene defined using `*` will always be called first.
+
+**Syntax:**
 ```
+* <scene_label> {
+    <scene_description>
+    <scene_actions>
+}
+```
+
+### Scene Description
+
+The scene description includes narrative text or character dialogue that represents the content of the scene. It helps to set the stage and provide context for the player or reader.
+
+**Syntax:**
+```
+"<scene_description>"
+```
+
+### Scene Actions
+
+Scene actions define additional elements within the scene, such as background music and transitions.
+
+#### Adding Background Music (BGM)
+
+To add background music to a scene, use the `b` parameter. Assign the file name of the background music track to the variable `b`. The BGM will play while the scene is active.
+
+**Syntax:**
+```
+b = "<bgm_file_name>";
+```
+
+To stop the background music for a specific scene, assign the value `"STOP"` to the variable `b`.
+
+**Syntax:**
+```
+b = "STOP";
+```
+
+#### Transitions
+
+Transitions allow the story to progress based on choices or conditions. Use the `c` parameter to define choose options and their corresponding scene transitions.
+
+**Syntax:**
+```
+c = "<option_1>" -> <next_scene_1>,
+    "<option_2>" -> <next_scene_2>,
+    ...
+```
+
+The `c` parameter assigns a chosen option to the variable `c`. When the assigned option is selected, the story will transition to the corresponding next scene.
+
+### Example Usage
+
+Here's an example of a "* .StoryScript" file with multiple scenes, including background music and transitions:
+
+```plaintext
 * {
-   "This is the first scene"
-   
-   b = "one.wav";
-   c = "start" -> s1;
+   "Welcome to the mysterious forest!"
+
+   b = "forest.wav";
+   c = "continue" -> s1;
 }
 
 s1 {
-    "This is the second scene"
+   "You encounter a fork in the path."
 
-    b = "STOP";
+   b = "STOP";
+   c = "Go left" -> s2,
+       "Go right" -> s3;
+}
+
+s2 {
+   "You follow the left path and find a hidden treasure chest."
+
+   b = "chest.wav";
+   c = "Open the chest" -> s4,
+       "Ignore the chest" -> s5;
+}
+
+s3 {
+   "You take the right path and come across a fierce monster."
+
+   b = "monster.wav";
+   c = "Fight the monster" -> s6,
+       "Run away" -> s7;
+}
+
+s4 {
+   "Congratulations! You found a rare gemstone in the chest."
+
+   b = "STOP";
+}
+
+s5 {
+   "You decide to ignore the chest and continue your journey."
+
+   b = "STOP";
+}
+
+s6 {
+   "You bravely engage in a battle with the monster."
+
+   b = "battle.wav";
+   c = "Attack" -> s8,
+       "Defend" -> s9;
+}
+
+s7 {
+   "You choose to run away and escape from the monster's grasp."
+
+   b = "STOP";
+}
+
+s8 {
+   "With your strong attack, you defeat the monster!"
+
+   b = "victory.wav";
+}
+
+s9 {
+   "You defend against the monster's attack and manage to survive."
+
+   b = "STOP";
 }
 ```
 
-* is the first Scene. it always be called first.
-
-Param | Description
-------|-------------
-b | Add BGM sound. when b is "STOP", stop the BGM.
-c | Add choose option. when when c is "NEXT", next Scene will be automaticaly choose.
+This example showcases a narrative where the player or reader explores a mysterious forest, encounters choices at forks in the path, finds a treasure chest, confronts a monster, and engages in battles. Background music and transitions are used to enhance the storytelling experience.
 
 ## Additional Library
 
